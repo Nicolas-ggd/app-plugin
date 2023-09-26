@@ -18,13 +18,11 @@ export const Chat = () => {
           {/* <!-- Card header --> */}
           {!isNewChat && !id && <ChatHeader />}
           {/* <!-- Card body --> */}
-          <div className="p-3 h-full">
-            {id && (
-              <ChatConversation>
-                <ChatHeader />
-              </ChatConversation>
-            )}
-          </div>
+          {id && (
+            <ChatConversation>
+              <ChatHeader />
+            </ChatConversation>
+          )}
           {/* <!-- Bottom right button --> */}
           {isNewChat && !id ? (
             <SearchConversation />

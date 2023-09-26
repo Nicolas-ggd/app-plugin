@@ -33,6 +33,7 @@ export const ChatConversation = (props: ChatConversationType) => {
           },
         ],
       };
+
       await axios
         .post("http://localhost:8080/chat/create-conversation", conversation)
         .then((res) => {
@@ -51,8 +52,7 @@ export const ChatConversation = (props: ChatConversationType) => {
       {props.children}
       <div className="bg-red-500">
         {isMessage?.map((item, index) => {
-          console.log(item);
-          return <div key={index}>{item.messages[0].message}</div>;
+          return <div key={index}>{item?.messages[0]?.message}</div>;
         })}
       </div>
       <form className="w-full p-2" onSubmit={submitConversation}>

@@ -10,10 +10,13 @@ import "aos/dist/aos.css";
 
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export const ChatHeader = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [conversationUser, setConversationUser] = useState<UserProps | undefined>();
+  const [conversationUser, setConversationUser] = useState<
+    UserProps | undefined
+  >();
   const { id } = useParams();
   const { authUser } = useUser();
 
@@ -22,16 +25,17 @@ export const ChatHeader = () => {
   }, []);
 
   useEffect(() => {
+    if (id) {
       const findConversationUser = async () => {
-        await axios.get(`http://localhost:8080/user/find-user-with-id?userId=${id}`)
-        .then((res) => {
-          const data = res.data;
-          setConversationUser(data[0]);
-        });
-
+        await axios
+          .get(`http://localhost:8080/user/find-user-with-id?userId=${id}`)
+          .then((res) => {
+            const data = res.data;
+            setConversationUser(data[0]);
+          });
       };
-
       findConversationUser();
+    }
   }, [id]);
 
   return (
@@ -53,7 +57,9 @@ export const ChatHeader = () => {
               className="inline-flex text-gray-800 hover:text-gray-900"
               href="#0"
             >
-              <h2 className="text-xl leading-snug font-bold">{id ? conversationUser?.name : authUser?.name}</h2>
+              <h2 className="text-xl leading-snug font-bold">
+                {id ? conversationUser?.name : authUser?.name}
+              </h2>
             </a>
             <a
               className="block text-sm font-medium hover:text-indigo-500"
@@ -78,11 +84,15 @@ export const ChatHeader = () => {
           <div
             data-aos="fade-right"
             data-aos-duration="400"
-            className="absolute right-0 bg-gray-300 p-3 top-16 rounded-md"
+            className="absolute right-0 bg-gray-300 p-3 top-20 rounded-md flex flex-col"
           >
-            <button className="p-1 bg-gray-200 rounded-md">
-              Log Out
+            <button className="p-1 bg-gray-200 rounded-md m-1">
               <LogoutIcon />
+              Log Out
+            </button>
+            <button className="p-1 bg-gray-200 rounded-md m-1">
+              <ArrowBackIcon />
+              Back
             </button>
           </div>
         )}
