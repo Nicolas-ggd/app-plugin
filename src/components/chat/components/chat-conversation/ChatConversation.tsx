@@ -25,20 +25,20 @@ export const ChatConversation = (props: ChatConversationType) => {
     try {
       const conversation: ConversationType = {
         participants: [authUser?._id!, id],
-        messages: [{
-          sender: authUser?._id || undefined,
-          message: isType,
-          recipient: id || undefined,
-        }],
+        messages: [
+          {
+            sender: authUser?._id || undefined,
+            message: isType,
+            recipient: id || undefined,
+          },
+        ],
       };
-      await axios.post(
-        "http://localhost:8080/chat/create-conversation",
-        conversation
-      )
-      .then((res) => {
-        const data = res.data;
-        setIsMessage(data);
-      })
+      await axios
+        .post("http://localhost:8080/chat/create-conversation", conversation)
+        .then((res) => {
+          const data = res.data;
+          setIsMessage(data);
+        });
     } catch (err) {
       throw new Error();
     }
@@ -47,21 +47,15 @@ export const ChatConversation = (props: ChatConversationType) => {
   };
 
   return (
-    <div
-      className="w-full h-full flex flex-col justify-between"
-      style={{ minHeight: "inherit" }}
-    >
+    <div className="w-full h-full flex flex-col justify-between h-full">
       {props.children}
       <div className="bg-red-500">
         {isMessage?.map((item, index) => {
-            return (
-                <div key={index}>
-                    {item.messages[0].message}
-                </div>
-            )
+          console.log(item);
+          return <div key={index}>{item.messages[0].message}</div>;
         })}
       </div>
-      <form className="w-full h-full p-2" onSubmit={submitConversation}>
+      <form className="w-full p-2" onSubmit={submitConversation}>
         <input
           type="text"
           id="text"

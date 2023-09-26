@@ -9,16 +9,16 @@ import { ChatConversation } from "./components/chat-conversation/ChatConversatio
 export const Chat = () => {
   const [isNewChat, setIsNewChat] = useState<boolean>(false);
   const { id } = useParams();
-  console.log(id);
+
   return (
     <section className="flex flex-col justify-center antialiased bg-gray-50 text-gray-600 min-h-screen p-4">
       <div className="h-full">
         {/* <!-- Card --> */}
-        <div className="relative max-w-[340px] min-h-[40vw] mx-auto bg-white shadow-lg rounded-lg">
+        <div className="relative max-w-[340px] h-[40vw] mx-auto bg-white shadow-lg rounded-lg">
           {/* <!-- Card header --> */}
           {!isNewChat && !id && <ChatHeader />}
           {/* <!-- Card body --> */}
-          <div className="py-3 px-3" style={{ minHeight: "inherit" }}>
+          <div className="p-3 h-full">
             {id && (
               <ChatConversation>
                 <ChatHeader />

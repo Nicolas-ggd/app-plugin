@@ -1,4 +1,8 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+
+import Aos from "aos";
+import "aos/dist/aos.css";
 
 import { UserProps } from "../../../user-auth/User.types";
 
@@ -7,11 +11,16 @@ type ChatUsersType = {
 };
 
 export const ChatUserList = (props: ChatUsersType) => {
+
+  useEffect(() => {
+    Aos.init();
+  }, []);
+
   return (
-    <>
+    <div className="p-4">
       {props.userList.map((item, index) => {
         return (
-          <Link to={`/chat/${item?._id}`} key={index} className="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50">
+          <Link data-aos="fade-right" to={`/chat/${item?._id}`} key={index} className="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50">
             <div className="flex items-center">
               <img
                 className="rounded-full items-start flex-shrink-0 mr-3"
@@ -28,6 +37,6 @@ export const ChatUserList = (props: ChatUsersType) => {
           </Link>
         );
       })}
-    </>
+    </div>
   );
 };
