@@ -32,7 +32,7 @@ export const ChatConversation = (props: ChatConversationType) => {
             recipient: id || undefined,
           },
         ],
-      };
+      } as const;
 
       await axios
         .post("http://localhost:8080/chat/create-conversation", conversation)
