@@ -21,7 +21,7 @@ export const ChatUserList = (props: ChatUsersType) => {
       {props.userList.map((item, index) => {
         return (
           <Link data-aos="fade-right" to={`/chat/${item?._id}`} key={index} className="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50">
-            <div className="flex items-center">
+            <div className="flex items-center bg-gray-200 p-3 rounded-md">
               <img
                 className="rounded-full items-start flex-shrink-0 mr-3"
                 src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-32-01_pfck4u.jpg"

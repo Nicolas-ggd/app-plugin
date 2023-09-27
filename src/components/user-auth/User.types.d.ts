@@ -1,7 +1,7 @@
-// Describe user details to use this type in different component's
+// UserProps is a description of user data that is the same throughout the project
 
-export type UserProps = {
+export interface UserProps {
   _id: string;
   name: string;
   online: boolean;
-};
+}

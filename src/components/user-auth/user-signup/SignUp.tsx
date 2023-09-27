@@ -1,17 +1,15 @@
 import { useState, FormEvent } from "react";
 import axios from "axios";
 
-type SignUpProps = {
-  closeSignUp: () => void;
-}
+import { AuthUser } from "../Auth.types";
 
-type RegisterUser = {
-  name: string;
+interface SignUpProps {
+  closeSignUp: () => void;
 }
 
 export const SignUp = (props: SignUpProps) => {
   const [isError, setIsError] = useState<boolean>(false);
-  const [user, setUser] = useState<RegisterUser>({
+  const [user, setUser] = useState<AuthUser>({
     name: "",
   });
 

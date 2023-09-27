@@ -1,17 +1,18 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
 import { useUser } from "../../../user-auth/UserContext";
+import { ChatType } from "../../Chat.types";
 import { ConversationType } from "../../Chat.types";
+import { PostConversationResponse } from "../../Chat.types";
 
-type ChatConversationType = {
-  children: React.ReactNode;
-};
+import SendIcon from '@mui/icons-material/Send';
+import socket from '../../../../api/socket';
 
-export const ChatConversation = (props: ChatConversationType) => {
+export const ChatConversation = (props: ChatType) => {
   const [isType, setIsType] = useState<string>("");
-  const [isMessage, setIsMessage] = useState<ConversationType[]>([]);
+  const [isMessage, setIsMessage] = useState<[]>([]);
   const { authUser } = useUser();
   const { id } = useParams();
 
@@ -28,18 +29,19 @@ export const ChatConversation = (props: ChatConversationType) => {
         messages: [
           {
             sender: authUser?._id || undefined,
-            message: isType,
+            message: isType || undefined,
             recipient: id || undefined,
           },
         ],
       } as const;
 
       await axios
-        .post("http://localhost:8080/chat/create-conversation", conversation)
+        .post<PostConversationResponse>("http://localhost:8080/chat/create-conversation", conversation)
         .then((res) => {
           const data = res.data;
-          setIsMessage(data);
-        });
+          console.log(data, 'post')
+          socket.emit("new-message", data);
+        })
     } catch (err) {
       throw new Error();
     }
@@ -51,11 +53,8 @@ export const ChatConversation = (props: ChatConversationType) => {
     <div className="w-full h-full flex flex-col justify-between h-full">
       {props.children}
       <div className="bg-red-500">
-        {isMessage?.map((item, index) => {
-          return <div key={index}>{item?.messages[0]?.message}</div>;
-        })}
       </div>
-      <form className="w-full p-2" onSubmit={submitConversation}>
+      <form className="w-full p-2 relative flex items-center" onSubmit={submitConversation}>
         <input
           type="text"
           id="text"
@@ -65,6 +64,9 @@ export const ChatConversation = (props: ChatConversationType) => {
           value={isType}
           onChange={inputTyping}
         />
+        <button type="submit" className="absolute right-6">
+          <SendIcon className="text-cyan-500 animate-pulse" />
+        </button>
       </form>
     </div>
   );

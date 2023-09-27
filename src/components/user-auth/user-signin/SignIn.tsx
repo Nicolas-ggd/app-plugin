@@ -3,18 +3,15 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { useUser } from "../UserContext";
+import { AuthUser } from "../Auth.types";
 
-type SignUpProps = {
+interface SignUpProps {
   closeSignIn: () => void;
-}
-
-type LoginUser = {
-  name: string;
 }
 
 export const SignIn = (props: SignUpProps) => {
   const [isError, setIsError] = useState<boolean>(false);
-  const [user, setUser] = useState<LoginUser>({
+  const [user, setUser] = useState<AuthUser>({
     name: "",
   });
   const navigate = useNavigate();
@@ -26,7 +23,6 @@ export const SignIn = (props: SignUpProps) => {
     }
 
     e.preventDefault();
-  
 
     try {
       await axios

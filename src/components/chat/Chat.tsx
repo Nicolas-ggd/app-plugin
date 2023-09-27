@@ -24,11 +24,8 @@ export const Chat = () => {
             </ChatConversation>
           )}
           {/* <!-- Bottom right button --> */}
-          {isNewChat && !id ? (
-            <SearchConversation />
-          ) : (
-            <NewChatButton newChat={() => setIsNewChat(!isNewChat)} />
-          )}
+          {isNewChat && !id && <SearchConversation />}
+          {!isNewChat && !id && <NewChatButton newChat={() => setIsNewChat(!isNewChat)} />}
         </div>
       </div>
     </section>

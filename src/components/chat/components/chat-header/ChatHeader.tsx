@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { useUser } from "../../../user-auth/UserContext";
@@ -19,6 +19,7 @@ export const ChatHeader = () => {
   >();
   const { id } = useParams();
   const { authUser } = useUser();
+  const navigate = useNavigate();
 
   useEffect(() => {
     Aos.init();
@@ -37,6 +38,18 @@ export const ChatHeader = () => {
       findConversationUser();
     }
   }, [id]);
+
+  const logOut = async () => {
+    await axios
+      .post(`http://localhost:8080/logout`, {
+        userId: authUser?._id,
+      })
+      .then(() => {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("authUser");
+        navigate("/");
+      });
+  };
 
   return (
     <header className="pt-6 pb-4 px-5 border-b border-gray-200">
@@ -84,9 +97,9 @@ export const ChatHeader = () => {
           <div
             data-aos="fade-right"
             data-aos-duration="400"
-            className="absolute right-0 bg-gray-300 p-3 top-20 rounded-md flex flex-col"
+            className="absolute right-0 bg-gray-300 top-20 rounded-md flex flex-col"
           >
-            <button className="p-1 bg-gray-200 rounded-md m-1">
+            <button onClick={logOut} className="p-1 bg-gray-200 rounded-md m-1">
               <LogoutIcon />
               Log Out
             </button>

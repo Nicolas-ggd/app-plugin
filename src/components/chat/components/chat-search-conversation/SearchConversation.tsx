@@ -80,7 +80,7 @@ export const SearchConversation = () => {
         <div data-aos="fade-right" className="p-2 flex flex-col w-full mt-5">
           <div className="flex justify-center py-4">
             <ChatIcon
-              className="text-cyan-500 animate-pulse "
+              className="text-cyan-500 animate-pulse"
               style={{ fontSize: "70px" }}
             />
           </div>
