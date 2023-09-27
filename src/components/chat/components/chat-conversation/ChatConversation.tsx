@@ -1,4 +1,4 @@
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { FixedSizeList } from "react-window";
 import axios from "axios";
@@ -22,6 +22,7 @@ export const ChatConversation = (props: ChatType) => {
   const [isMessage, setIsMessage] = useState(initialConversationResponse);
   const { authUser } = useUser();
   const { id } = useParams();
+  const bottomScroll = useRef<FixedSizeList>(null);
 
   const inputTyping = (e: FormEvent<HTMLInputElement>) => {
     setIsType(e.currentTarget.value);
@@ -84,16 +85,22 @@ export const ChatConversation = (props: ChatType) => {
     getConversation();
   }, [id]);
 
+  useEffect(() => {
+    if (bottomScroll.current) {
+      bottomScroll.current.scrollToItem(isMessage?.messages?.length, "end");
+    }
+  }, [isMessage?.messages]);
+
   return (
     <div className="w-full h-full flex flex-col justify-between h-full">
       {props.children}
-
       <FixedSizeList
         height={400} // Set the height of the visible area
         width={340} // Set the width of the list
         itemSize={70} // Set the height of each item in the list
         itemCount={isMessage?.messages?.length || 0} // Total number of items
         style={{ overflow: "scroll", margin: "2px" }}
+        ref={bottomScroll}
       >
         {({ index, style }: { index: number; style: React.CSSProperties }) => {
           const item = isMessage?.messages[index];
