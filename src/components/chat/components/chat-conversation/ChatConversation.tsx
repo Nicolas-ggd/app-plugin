@@ -1,12 +1,12 @@
-import { useState, FormEvent, useEffect, useRef } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { FixedSizeList } from "react-window";
 import axios from "axios";
 
 import { useUser } from "../../../user-auth/UserContext";
 import { ChatType } from "../../Chat.types";
 import { ConversationType } from "../../Chat.types";
 import { ConversationResponse } from "../../Chat.types";
-import { useOnScreen } from "../../../../hooks/useOnScreen";
 import socket from "../../../../api/socket";
 
 import SendIcon from "@mui/icons-material/Send";
@@ -22,10 +22,6 @@ export const ChatConversation = (props: ChatType) => {
   const [isMessage, setIsMessage] = useState(initialConversationResponse);
   const { authUser } = useUser();
   const { id } = useParams();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loadMore, setLoadMore] = useState(false);
-  const isLoading = useRef(null);
-  const isOnScreen = useOnScreen(isLoading);
 
   const inputTyping = (e: FormEvent<HTMLInputElement>) => {
     setIsType(e.currentTarget.value);
@@ -71,47 +67,43 @@ export const ChatConversation = (props: ChatType) => {
   const getConversation = async () => {
     await axios
       .get(
-        `http://localhost:8080/chat/get-conversation?senderId=${
-          authUser?._id
-        }&recipientId=${id}&page=${currentPage + 1}`
+        `http://localhost:8080/chat/get-conversation?senderId=${authUser?._id}&recipientId=${id}`
       )
       .then((res) => {
         const data = res.data;
         setIsMessage((prevData: ConversationResponse) => {
           return {
-            messages: [...prevData.messages, ...data?.messages],
+            messages: [...prevData.messages, ...data[0]?.messages],
           };
         });
-        setCurrentPage(currentPage + 1);
-        setLoadMore(false);
         console.log(data, "davita");
       });
   };
 
   useEffect(() => {
-    if (isOnScreen) {
-      setLoadMore(true);
-    }
-  }, [isOnScreen]);
-
-  useEffect(() => {
-    if (loadMore) {
-      getConversation();
-    }
-  }, [loadMore]);
+    getConversation();
+  }, [id]);
 
   return (
     <div className="w-full h-full flex flex-col justify-between h-full">
       {props.children}
 
-      <div className="overflow-scroll">
-        {isMessage?.messages?.map((item, index) => {
+      <FixedSizeList
+        height={400} // Set the height of the visible area
+        width={340} // Set the width of the list
+        itemSize={70} // Set the height of each item in the list
+        itemCount={isMessage?.messages?.length || 0} // Total number of items
+        style={{ overflow: "scroll", margin: "2px" }}
+      >
+        {({ index, style }: { index: number; style: React.CSSProperties }) => {
+          const item = isMessage?.messages[index];
           return (
             <div
               key={index}
-              className="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50"
+              className="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 my-2"
+              style={style}
             >
-              <div className="flex items-center bg-gray-200 p-3 rounded-md w-60 ml-4">
+              <div className="flex items-center bg-gray-200 p-3 rounded-md w-60 ml-4 my-2">
                 <img
                   className="rounded-full items-start flex-shrink-0 mr-3"
                   src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-32-01_pfck4u.jpg"
@@ -125,9 +117,9 @@ export const ChatConversation = (props: ChatType) => {
               </div>
             </div>
           );
-        })}
-        <span ref={isLoading}></span>
-      </div>
+        }}
+      </FixedSizeList>
+
       <form
         className="w-full p-2 relative flex items-center"
         onSubmit={submitConversation}
