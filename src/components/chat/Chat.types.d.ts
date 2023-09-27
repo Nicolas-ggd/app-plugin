@@ -2,7 +2,7 @@
 // or it is a description of the data we will receive after sending the message.
 
 export interface ConversationType {
-  participants: [string | undefined, string | undefined];
+  participants: [string | undefined, string | undefined],
   messages: 
     {
       sender: string | undefined;
@@ -18,7 +18,7 @@ export interface ChatType {
   children: React.ReactNode;
 }
 
-export interface PostConversationResponse {
+export interface ConversationResponse {
   messages: {
     sender: string | undefined;
     message: string;

@@ -1,18 +1,23 @@
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 
 import { useUser } from "../../../user-auth/UserContext";
 import { ChatType } from "../../Chat.types";
 import { ConversationType } from "../../Chat.types";
-import { PostConversationResponse } from "../../Chat.types";
+import { ConversationResponse } from "../../Chat.types";
+import socket from "../../../../api/socket";
 
-import SendIcon from '@mui/icons-material/Send';
-import socket from '../../../../api/socket';
+import SendIcon from "@mui/icons-material/Send";
+
+type ConversationDescribe = ConversationType | ConversationResponse;
+
+const initialConversationResponse: ConversationDescribe = {
+  messages: [],
+};
 
 export const ChatConversation = (props: ChatType) => {
   const [isType, setIsType] = useState<string>("");
-  const [isMessage, setIsMessage] = useState<[]>([]);
+  const [isMessage, setIsMessage] = useState(initialConversationResponse);
   const { authUser } = useUser();
   const { id } = useParams();
 
@@ -35,13 +40,7 @@ export const ChatConversation = (props: ChatType) => {
         ],
       } as const;
 
-      await axios
-        .post<PostConversationResponse>("http://localhost:8080/chat/create-conversation", conversation)
-        .then((res) => {
-          const data = res.data;
-          console.log(data, 'post')
-          socket.emit("new-message", data);
-        })
+      socket.emit("new-message", conversation);
     } catch (err) {
       throw new Error();
     }
@@ -49,12 +48,50 @@ export const ChatConversation = (props: ChatType) => {
     setIsType("");
   };
 
+  useEffect(() => {
+    socket.on("new-message-received", (data) => {
+      setIsMessage((prevData: ConversationResponse) => {
+        return {
+          messages: [...prevData.messages, ...data?.messages],
+        };
+      });
+    });
+
+    return () => {
+      socket.off("new-message-received");
+    };
+  }, []);
+
   return (
     <div className="w-full h-full flex flex-col justify-between h-full">
       {props.children}
       <div className="bg-red-500">
+        {isMessage?.messages?.map((item, index) => {
+          return (
+            <div
+              key={index}
+              className="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50"
+            >
+              <div className="flex items-center bg-gray-200 p-3 rounded-md">
+                <img
+                  className="rounded-full items-start flex-shrink-0 mr-3"
+                  src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-32-01_pfck4u.jpg"
+                  width="32"
+                  height="32"
+                  alt="Marie Zulfikar"
+                />
+                <div>
+                  <div className="text-[13px]">{item?.message}</div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
-      <form className="w-full p-2 relative flex items-center" onSubmit={submitConversation}>
+      <form
+        className="w-full p-2 relative flex items-center"
+        onSubmit={submitConversation}
+      >
         <input
           type="text"
           id="text"
