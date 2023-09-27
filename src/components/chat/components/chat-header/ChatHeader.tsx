@@ -11,6 +11,7 @@ import "aos/dist/aos.css";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export const ChatHeader = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -106,6 +107,10 @@ export const ChatHeader = () => {
             <button className="p-1 bg-gray-200 rounded-md m-1">
               <ArrowBackIcon />
               Back
+            </button>
+            <button className="p-1 bg-gray-200 rounded-md m-1">
+              <DeleteIcon />
+              Delete conversation
             </button>
           </div>
         )}

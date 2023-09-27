@@ -1,10 +1,12 @@
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 
 import { useUser } from "../../../user-auth/UserContext";
 import { ChatType } from "../../Chat.types";
 import { ConversationType } from "../../Chat.types";
 import { ConversationResponse } from "../../Chat.types";
+import { useOnScreen } from "../../../../hooks/useOnScreen";
 import socket from "../../../../api/socket";
 
 import SendIcon from "@mui/icons-material/Send";
@@ -20,6 +22,10 @@ export const ChatConversation = (props: ChatType) => {
   const [isMessage, setIsMessage] = useState(initialConversationResponse);
   const { authUser } = useUser();
   const { id } = useParams();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loadMore, setLoadMore] = useState(false);
+  const isLoading = useRef(null);
+  const isOnScreen = useOnScreen(isLoading);
 
   const inputTyping = (e: FormEvent<HTMLInputElement>) => {
     setIsType(e.currentTarget.value);
@@ -62,17 +68,50 @@ export const ChatConversation = (props: ChatType) => {
     };
   }, []);
 
+  const getConversation = async () => {
+    await axios
+      .get(
+        `http://localhost:8080/chat/get-conversation?senderId=${
+          authUser?._id
+        }&recipientId=${id}&page=${currentPage + 1}`
+      )
+      .then((res) => {
+        const data = res.data;
+        setIsMessage((prevData: ConversationResponse) => {
+          return {
+            messages: [...prevData.messages, ...data?.messages],
+          };
+        });
+        setCurrentPage(currentPage + 1);
+        setLoadMore(false);
+        console.log(data, "davita");
+      });
+  };
+
+  useEffect(() => {
+    if (isOnScreen) {
+      setLoadMore(true);
+    }
+  }, [isOnScreen]);
+
+  useEffect(() => {
+    if (loadMore) {
+      getConversation();
+    }
+  }, [loadMore]);
+
   return (
     <div className="w-full h-full flex flex-col justify-between h-full">
       {props.children}
-      <div className="bg-red-500">
+
+      <div className="overflow-scroll">
         {isMessage?.messages?.map((item, index) => {
           return (
             <div
               key={index}
               className="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50"
             >
-              <div className="flex items-center bg-gray-200 p-3 rounded-md">
+              <div className="flex items-center bg-gray-200 p-3 rounded-md w-60 ml-4">
                 <img
                   className="rounded-full items-start flex-shrink-0 mr-3"
                   src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-32-01_pfck4u.jpg"
@@ -87,6 +126,7 @@ export const ChatConversation = (props: ChatType) => {
             </div>
           );
         })}
+        <span ref={isLoading}></span>
       </div>
       <form
         className="w-full p-2 relative flex items-center"
