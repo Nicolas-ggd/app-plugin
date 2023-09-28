@@ -7,6 +7,7 @@ import { useUser } from "../../../user-auth/UserContext";
 import { ChatType } from "../../Chat.types";
 import { ConversationType } from "../../Chat.types";
 import { ConversationResponse } from "../../Chat.types";
+import { useOnScreen } from "../../../../hooks/useOnScreen";
 import socket from "../../../../api/socket";
 
 import SendIcon from "@mui/icons-material/Send";
@@ -23,6 +24,10 @@ export const ChatConversation = (props: ChatType) => {
   const { authUser } = useUser();
   const { id } = useParams();
   const bottomScroll = useRef<FixedSizeList>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [loadMore, setLoadMore] = useState(false);
+  const isLoading = useRef(null);
+  const isOnScreen = useOnScreen(isLoading);
 
   const inputTyping = (e: FormEvent<HTMLInputElement>) => {
     setIsType(e.currentTarget.value);
@@ -68,22 +73,34 @@ export const ChatConversation = (props: ChatType) => {
   const getConversation = async () => {
     await axios
       .get(
-        `http://localhost:8080/chat/get-conversation?senderId=${authUser?._id}&recipientId=${id}`
+        `http://localhost:8080/chat/get-conversation?senderId=${
+          authUser?._id
+        }&recipientId=${id}&page=${currentPage + 1}`
       )
       .then((res) => {
         const data = res.data;
         setIsMessage((prevData: ConversationResponse) => {
           return {
-            messages: [...prevData.messages, ...data[0]?.messages],
+            messages: [...prevData.messages, ...data?.messages],
           };
         });
+        setCurrentPage(currentPage + 1);
+        setLoadMore(false);
         console.log(data, "davita");
       });
   };
 
   useEffect(() => {
-    getConversation();
-  }, [id]);
+    if (isOnScreen) {
+      setLoadMore(true);
+    }
+  }, [isOnScreen]);
+
+  useEffect(() => {
+    if (loadMore) {
+      getConversation();
+    }
+  }, [loadMore]);
 
   useEffect(() => {
     if (bottomScroll.current) {
@@ -126,7 +143,7 @@ export const ChatConversation = (props: ChatType) => {
           );
         }}
       </FixedSizeList>
-
+      <div ref={isLoading}></div>
       <form
         className="w-full p-2 relative flex items-center"
         onSubmit={submitConversation}
