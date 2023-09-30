@@ -1,9 +1,6 @@
 import { RefObject, useEffect, useState } from "react";
 
-export const useOnScreen = (
-  ref: RefObject<Element>,
-  rootMargin = "10px"
-): boolean => {
+export const useOnScreen = (ref: RefObject<Element>, rootMargin = "10px"): boolean => {
   const [isIntersecting, setIsIntersecting] = useState(false);
 
   useEffect(() => {

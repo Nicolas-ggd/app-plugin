@@ -53,7 +53,7 @@ export const ChatHeader = () => {
   };
 
   return (
-    <header className="pt-6 pb-4 px-5 border-b border-gray-200">
+    <header className="pt-6 pb-4 px-5 border-b border-gray-200 z-50">
       <div className="flex justify-between items-center mb-3">
         {/* <!-- Image + name --> */}
         <div className="flex items-center">

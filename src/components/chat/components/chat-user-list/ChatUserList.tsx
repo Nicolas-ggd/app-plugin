@@ -1,26 +1,33 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
+import { useUser } from "../../../user-auth/UserContext";
+import { UserProps } from "../../../user-auth/User.types";
+import socket from "../../../../api/socket";
+
 import Aos from "aos";
 import "aos/dist/aos.css";
-
-import { UserProps } from "../../../user-auth/User.types";
 
 type ChatUsersType = {
   userList: UserProps[];
 };
 
 export const ChatUserList = (props: ChatUsersType) => {
+  const { authUser } = useUser();
 
   useEffect(() => {
     Aos.init();
   }, []);
 
+  const joinUserInConversation = () => {
+    socket.emit("join-user", authUser?._id);
+  };
+
   return (
     <div className="p-4">
       {props.userList.map((item, index) => {
         return (
-          <Link data-aos="fade-right" to={`/chat/${item?._id}`} key={index} className="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50">
+          <Link onClick={joinUserInConversation} data-aos="fade-right" to={`/chat/${item?._id}`} key={index} className="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50">
             <div className="flex items-center bg-gray-200 p-3 rounded-md">
               <img
                 className="rounded-full items-start flex-shrink-0 mr-3"

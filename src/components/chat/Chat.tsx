@@ -14,7 +14,7 @@ export const Chat = () => {
     <section className="flex flex-col justify-center antialiased bg-gray-50 text-gray-600 min-h-screen p-4">
       <div className="h-full">
         {/* <!-- Card --> */}
-        <div className="relative max-w-[340px] h-[40vw] mx-auto bg-white shadow-lg rounded-lg">
+        <div className="relative max-w-[340px] h-full mx-auto bg-white shadow-lg rounded-lg">
           {/* <!-- Card header --> */}
           {!isNewChat && !id && <ChatHeader />}
           {/* <!-- Card body --> */}
