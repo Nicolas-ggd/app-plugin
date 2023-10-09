@@ -16,6 +16,7 @@ import Aos from "aos";
 import "aos/dist/aos.css";
 
 import SendIcon from "@mui/icons-material/Send";
+import { Input } from "../../../input/Input";
 
 type ConversationDescribe = ConversationType | ConversationResponse;
 
@@ -77,31 +78,30 @@ export const ChatConversation = (props: ChatType) => {
     };
   }, []);
 
-  const getConversation = async () => {
-    await axios
-      .get(
-        `http://localhost:8080/chat/get-conversation?senderId=${
-          authUser?._id
-        }&recipientId=${id}&page=${currentPage + 1}`
-      )
-      .then((res) => {
-        const data = res.data;
-        setIsMessage((prevData: ConversationResponse) => {
-          return {
-            messages: [...prevData.messages, ...data?.messages],
-          };
-        });
-        if (data?.messages?.length === 0) {
-          setIsLoadMore(!isLoadMore);
-        }
-        setCurrentPage((prevData) => prevData + 1);
-        console.log(data, "cringe");
-      });
-  };
-  console.log(currentPage);
   useEffect(() => {
-      getConversation();
-  }, []);
+    const getConversation = async () => {
+      await axios
+        .get(
+          `http://localhost:8080/chat/get-conversation?senderId=${
+            authUser?._id
+          }&recipientId=${id}&page=${currentPage + 1}`
+        )
+        .then((res) => {
+          const data = res.data;
+          console.log(data);
+          setIsMessage((prevData: ConversationResponse) => {
+            return {
+              messages: [...prevData.messages, ...data?.messages],
+            };
+          });
+          if (data?.messages?.length === 0) {
+            setIsLoadMore(!isLoadMore);
+          }
+        });
+    };
+
+    getConversation();
+  }, [currentPage, id]);
 
   useEffect(() => {
     if (bottomScroll.current) {
@@ -115,7 +115,10 @@ export const ChatConversation = (props: ChatType) => {
       <div className="h-full w-full">
         <InfiniteScroll
           dataLength={isMessage?.messages?.length}
-          next={() => setCurrentPage((prevData) => prevData + 1)}
+          next={() => {
+            setCurrentPage((prevCount) => prevCount + 1);
+            console.log("WTF!");
+          }}
           hasMore={isLoadMore}
           loader={
             <div className="text-center w-full animate-pulse my-2">
@@ -173,14 +176,14 @@ export const ChatConversation = (props: ChatType) => {
         className="w-full p-2 relative flex items-center"
         onSubmit={submitConversation}
       >
-        <input
+        <Input
           type="text"
           id="text"
-          className="bg-gray-50 px-2 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
           placeholder="Message..."
-          required
+          required={true}
           value={isType}
-          onChange={inputTyping}
+          onChange={(e) => inputTyping(e)}
+          className=""
         />
         <button type="submit" className="absolute right-6">
           <SendIcon className="text-cyan-500 animate-pulse" />

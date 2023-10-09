@@ -10,13 +10,14 @@ import SearchIcon from "@mui/icons-material/Search";
 import ChatIcon from "@mui/icons-material/Chat";
 
 import "aos/dist/aos.css";
+import { Input } from "../../../input/Input";
 
 export const SearchConversation = () => {
   const [isSearch, setIsSearch] = useState("");
   const [isChat, setIsChat] = useState<[] | null>();
   const { authUser } = useUser();
 
-  const inputeTyping = (e: FormEvent<HTMLInputElement>) => {
+  const inputTyping = (e: FormEvent<HTMLInputElement>) => {
     setIsSearch(e.currentTarget.value);
   };
 
@@ -66,7 +67,7 @@ export const SearchConversation = () => {
         <div className="absolute m-2">
           <SearchIcon />
         </div>
-        <input
+        {/* <input
           type="text"
           id="text"
           className="bg-gray-50 px-8 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
@@ -74,6 +75,15 @@ export const SearchConversation = () => {
           required
           value={isSearch}
           onChange={inputeTyping}
+        /> */}
+        <Input
+        type="text"
+        id="text"
+        placeholder="Search conversation..."
+        required={true}
+        value={isSearch}
+        className="px-8"
+        onChange={(e) => inputTyping(e)}
         />
       </form>
       {isChat?.length === 0 && (
