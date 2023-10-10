@@ -9,6 +9,7 @@ import { useUser } from "../../../user-auth/UserContext";
 import { ChatType } from "../../Chat.types";
 import { ConversationType } from "../../Chat.types";
 import { ConversationResponse } from "../../Chat.types";
+import { Input } from "../../../input/Input";
 
 import socket from "../../../../api/socket";
 
@@ -16,7 +17,6 @@ import Aos from "aos";
 import "aos/dist/aos.css";
 
 import SendIcon from "@mui/icons-material/Send";
-import { Input } from "../../../input/Input";
 
 type ConversationDescribe = ConversationType | ConversationResponse;
 
@@ -78,8 +78,9 @@ export const ChatConversation = (props: ChatType) => {
     };
   }, []);
 
-  useEffect(() => {
-    const getConversation = async () => {
+  const getConversation = async () => {
+    try {
+      setIsLoadMore(true);
       await axios
         .get(
           `http://localhost:8080/chat/get-conversation?senderId=${
@@ -88,20 +89,25 @@ export const ChatConversation = (props: ChatType) => {
         )
         .then((res) => {
           const data = res.data;
-          console.log(data);
           setIsMessage((prevData: ConversationResponse) => {
             return {
               messages: [...prevData.messages, ...data?.messages],
             };
           });
+          setCurrentPage((prevCount) => prevCount + 1);
           if (data?.messages?.length === 0) {
-            setIsLoadMore(!isLoadMore);
           }
         });
-    };
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoadMore(false);
+    }
+  };
 
+  useEffect(() => {
     getConversation();
-  }, [currentPage, id]);
+  }, []);
 
   useEffect(() => {
     if (bottomScroll.current) {
@@ -115,10 +121,7 @@ export const ChatConversation = (props: ChatType) => {
       <div className="h-full w-full">
         <InfiniteScroll
           dataLength={isMessage?.messages?.length}
-          next={() => {
-            setCurrentPage((prevCount) => prevCount + 1);
-            console.log("WTF!");
-          }}
+          next={getConversation}
           hasMore={isLoadMore}
           loader={
             <div className="text-center w-full animate-pulse my-2">
@@ -127,7 +130,7 @@ export const ChatConversation = (props: ChatType) => {
           }
           endMessage={
             <p style={{ textAlign: "center" }}>
-              <b>No more messages to shown</b>
+              <b>No more messages...</b>
             </p>
           }
         >

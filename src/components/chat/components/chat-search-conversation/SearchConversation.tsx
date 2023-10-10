@@ -1,16 +1,15 @@
 import { useState, useEffect, FormEvent } from "react";
 import axios from "axios";
 
-import Aos from "aos";
-
 import { useUser } from "../../../user-auth/UserContext";
 import { ChatUserList } from "../chat-user-list/ChatUserList";
+import { Input } from "../../../input/Input";
 
 import SearchIcon from "@mui/icons-material/Search";
 import ChatIcon from "@mui/icons-material/Chat";
 
+import Aos from "aos";
 import "aos/dist/aos.css";
-import { Input } from "../../../input/Input";
 
 export const SearchConversation = () => {
   const [isSearch, setIsSearch] = useState("");
@@ -67,23 +66,14 @@ export const SearchConversation = () => {
         <div className="absolute m-2">
           <SearchIcon />
         </div>
-        {/* <input
+        <Input
           type="text"
           id="text"
-          className="bg-gray-50 px-8 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
           placeholder="Search conversation..."
-          required
+          required={true}
           value={isSearch}
-          onChange={inputeTyping}
-        /> */}
-        <Input
-        type="text"
-        id="text"
-        placeholder="Search conversation..."
-        required={true}
-        value={isSearch}
-        className="px-8"
-        onChange={(e) => inputTyping(e)}
+          className="px-8"
+          onChange={(e) => inputTyping(e)}
         />
       </form>
       {isChat?.length === 0 && (
